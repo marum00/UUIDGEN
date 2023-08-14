@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>UUIDサイト</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    #container {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    label {
+      font-weight: bold;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+    }
+    button {
+      padding: 8px 16px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    pre {
+      background-color: #f5f5f5;
+      border: 1px solid #ccc;
+      padding: 10px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <label for="packName">パックの名前: </label>
+    <input type="text" id="packName"><br>
+
+    <label for="packDescription">パックの説明: </label>
+    <input type="text" id="packDescription"><br>
+
+    <button onclick="generateCode()">コードを生成</button>
+    <button onclick="copyCode()" id="copyButton" disabled>コードをコピー</button>
+    <pre id="codeOutput"></pre>
+  </div>
+
+  <script>
+    function generateRandomUUID() {
+      var characters = "abcdef0123456789";
+      var uuid = "";
+      for (var i = 0; i < 32; i++) {
+        uuid += characters[Math.floor(Math.random() * characters.length)];
+        if (i === 7 || i === 11 || i === 15 || i === 19) {
+          uuid += "-";
+        }
+      }
+      return uuid;
+    }
+
+    function generateCode() {
+      var packDescription = document.getElementById("packDescription").value;
+      var packName = document.getElementById("packName").value;
+      var moduleUUID = generateRandomUUID();
+
+      var siteData = {
+        "format_version": 1,
+        "header": {
+          "description": packDescription,
+          "name": packName,
+          "platform_locked": false,
+          "uuid": generateRandomUUID(),
+          "version": [0, 0, 1]
+        },
+        "min_engine_version": [0, 0, 1, 1, 2, 5],
+        "modules": [
+          {
+            "description": "Mq_uuid_genで生成",
+            "type": "resources",
+            "uuid": moduleUUID,
+            "version": [0, 0, 1]
+          }
+        ]
+      };
+
+      var code = JSON.stringify(siteData, null, 3);
+      document.getElementById("codeOutput").textContent = code;
+      document.getElementById("copyButton").disabled = false;
+    }
+
+    function copyCode() {
+      var codeText = document.getElementById("codeOutput");
+      var range = document.createRange();
+      range.selectNode(codeText);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+      document.execCommand("copy");
+      window.getSelection().removeAllRanges();
+      alert("コードがコピーされました！");
+    }
+  </script>
+</body>
+</html>
